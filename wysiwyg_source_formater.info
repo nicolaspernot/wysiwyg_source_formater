@@ -1,0 +1,5 @@
+name = Wysiwyg Source Formater
+description = Let's customize the wysiwyg source formating
+dependencies[] = wysiwyg
+package = User interface
+core = 7.x
