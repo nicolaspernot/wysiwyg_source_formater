@@ -1,0 +1,32 @@
+<?php
+
+function wysiwyg_source_formater_schema() {
+  $schema['wsf_rules'] = array(
+    'description' => 'Wysiwyg source formater rules.',
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'title' => array(
+        'description' => "Title or description to administration usage.",
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'tags' => array(
+        'description' => 'Tags list concerned by the formating rule. Serialized.',
+        'type' => 'blob',
+      ),
+      'options' => array(
+        'description' => 'Rules options to apply to tags.',
+        'type' => 'blob',
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}
