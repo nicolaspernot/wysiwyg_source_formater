@@ -1,6 +1,96 @@
 <?php
 
+// TODO: Enter file description on each file
 // TODO: Create file test
 // TODO: Create hook_help
-// TODO: Create hook_permission
-// TODO: Create hook_menu
+
+
+/**
+ * Implements hook_menu().
+ */
+function wysiwyg_source_formater_menu() {
+  $items = array();
+  $module_path = 'admin/config/content/wysiwyg/source-formater';
+
+  $items[$module_path] = array(
+    'title' => 'Wysiwyg Source Formater Rules',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('wysiwyg_source_formater_rules'),
+    'access arguments' => array('administer wysiwyg_source_formater'),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'wysiwyg_source_formater.admin.inc',
+  );
+
+  $items[$module_path . '/add'] = array(
+    'title' => 'Add formating rule',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('wysiwyg_source_formater_edit_rule'),
+    'access arguments' => array('administer wysiwyg_source_formater'),
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'wysiwyg_source_formater.admin.inc',
+  );
+
+  return $items;
+}
+
+
+/**
+ * Implements hook_permission().
+ */
+function wysiwyg_source_formater_permission() {
+  $permissions = array();
+
+  $permissions['administer wysiwyg_source_formater'] = array(
+    'title' => t('Administer Wysiwyg source formater'),
+    'description' => t('User can manage Wysiwyg formating rules'),
+  );
+
+  return $permissions;
+}
+
+
+/**
+ * #######################################
+ * ############# Entity part #############
+ * #######################################
+ */
+
+/**
+ * Implements hook_entity_info().
+ */
+function wysiwyg_source_formater_entity_info() {
+  $entity = array(
+    'wsf' => array(
+      'label' => 'Wysiwyg source formater rules',
+      'base table' => 'wsf_rules',
+      'entity keys' => array(
+        'id' => 'id',
+      ),
+    ),
+  );
+
+  return $entity;
+}
+
+/**
+ * Load a single record.
+ *
+ * @param $id
+ *    The id representing the record we want to load.
+ */
+function wysiwyg_source_formater_load($id, $reset = FALSE) {
+  return wysiwyg_source_formater_load_multiple(array($id), array(), $reset);
+}
+
+/**
+ * Load multiple records.
+ */
+function wysiwyg_source_formater_load_multiple($ids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('wsf', $ids, $conditions, $reset);
+}
+
+/**
+ * ##############################################
+ * ############# End of entity part #############
+ * ##############################################
+ */

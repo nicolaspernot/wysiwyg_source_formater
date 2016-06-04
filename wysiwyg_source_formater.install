@@ -1,5 +1,7 @@
 <?php
 
+// TODO: Remove data table on uninstall module
+
 function wysiwyg_source_formater_schema() {
   $schema['wsf_rules'] = array(
     'description' => 'Wysiwyg source formater rules.',
@@ -20,7 +22,7 @@ function wysiwyg_source_formater_schema() {
         'description' => 'Tags list concerned by the formating rule. Serialized.',
         'type' => 'blob',
       ),
-      'options' => array(
+      'rules' => array(
         'description' => 'Rules options to apply to tags.',
         'type' => 'blob',
       ),
