@@ -9,6 +9,7 @@ function wysiwyg_source_formater_rules($form, &$form_state) {
     'title' => array('data' => t('Title')),
     'rules' => array('data' => t('Rules')),
     'tags' => array('data' => t('Tags')),
+    'operations' => array('data' => t('Operations'))
   );
 
   $rows = wysiwyg_source_formater_retrieve_rules();
@@ -29,13 +30,47 @@ function wysiwyg_source_formater_rules($form, &$form_state) {
 function wysiwyg_source_formater_retrieve_rules() {
   $rows = array();
   $wsf_rules = entity_load('wsf');
+  $destination = drupal_get_destination();
 
-  //TODO: Unserialize data and theme them
+  //TODO: Don't display the rule key but the real name
   foreach($wsf_rules as $wsf_rule) {
+    $rules = unserialize($wsf_rule->rules);
+    $rules = array_keys($rules);
+    $rules = '<ul><li>' . implode('</li><li>', $rules) . '</li></ul>';
+
+    $tags = unserialize($wsf_rule->tags);
+    $tags = array_keys($tags);
+    $tags = '<ul><li>' . implode('</li><li>', $tags) . '</li></ul>';
+
+    // TODO: Create permission to edit the rule
+//    if (access('update', $user)) {
+    $operations['edit'] = array(
+      'title' => t('edit'),
+      'href' => WSF_MODULE_PATH . '/edit/' . $wsf_rule->id,
+      'query' => $destination,
+    );
+//    }
+
+    // TODO: Create permission to delete the rule
+//    if (access('delete', $user)) {
+    $operations['delete'] = array(
+      'title' => t('delete'),
+      'href' => WSF_MODULE_PATH . '/edit/' . $wsf_rule->id,
+      'query' => $destination,
+    );
+//    }
+
     $rows[] = array(
       'title' => $wsf_rule->title,
-      'rules' => $wsf_rule->rules,
-      'tags' => $wsf_rule->tags,
+      'rules' => $rules,
+      'tags' => $tags,
+      'operations' => array(
+        'data' => array(
+          '#theme' => 'links__node_operations',
+          '#links' => $operations,
+          '#attributes' => array('class' => array('links', 'inline')),
+        ),
+      ),
     );
   }
   return $rows;
