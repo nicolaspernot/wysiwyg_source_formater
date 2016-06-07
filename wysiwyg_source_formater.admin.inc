@@ -33,9 +33,13 @@ function wysiwyg_source_formater_retrieve_rules() {
   $destination = drupal_get_destination();
 
   //TODO: Don't display the rule key but the real name
+  $options = wysiwyg_source_formater_get_rules_options();
   foreach($wsf_rules as $wsf_rule) {
     $rules = unserialize($wsf_rule->rules);
-    $rules = array_keys($rules);
+    foreach($rules as $op => &$rule) {
+      $rule = $options[$op];
+    }
+//    $rules = array_keys($rules);
     $rules = '<ul><li>' . implode('</li><li>', $rules) . '</li></ul>';
 
     $tags = unserialize($wsf_rule->tags);
