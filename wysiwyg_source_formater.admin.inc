@@ -80,6 +80,11 @@ function wysiwyg_source_formater_retrieve_rules() {
 function wysiwyg_source_formater_edit_rule($form, &$form_state, $wsf_id = NULL) {
   if($wsf_id) {
     $wsf = wysiwyg_source_formater_load($wsf_id);
+    if(!empty($wsf) && isset($wsf[$wsf_id])) {
+      $wsf = $wsf[$wsf_id];
+    } else {
+      $wsf = NULL;
+    }
   }
 
   // Title
@@ -90,6 +95,7 @@ function wysiwyg_source_formater_edit_rule($form, &$form_state, $wsf_id = NULL) 
   );
 
   // Rule
+  $wsf_rules = unserialize($wsf->rules);
   $indent = array(
     '#type' => 'checkbox',
     '#title' => t('Indent'),
@@ -124,6 +130,7 @@ function wysiwyg_source_formater_edit_rule($form, &$form_state, $wsf_id = NULL) 
   );
 
   // Tags
+  $wsf_tags = unserialize($wsf->tags);
   $list_tags = array(
     'a',
     'abbr',

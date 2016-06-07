@@ -32,7 +32,7 @@ function wysiwyg_source_formater_menu() {
   $items[WSF_MODULE_PATH . '/edit/%'] = array(
     'title' => 'Add formating rule',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('wysiwyg_source_formater_edit_rule', 1),
+    'page arguments' => array('wysiwyg_source_formater_edit_rule', 6),
     'access arguments' => array('administer wysiwyg_source_formater'),
     'type' => MENU_LOCAL_ACTION,
     'file' => 'wysiwyg_source_formater.admin.inc',
@@ -41,7 +41,7 @@ function wysiwyg_source_formater_menu() {
   $items[WSF_MODULE_PATH . '/delete/%'] = array(
     'title' => 'Add formating rule',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('wysiwyg_source_formater_delete_rule', 1),
+    'page arguments' => array('wysiwyg_source_formater_delete_rule', 6),
     'access arguments' => array('administer wysiwyg_source_formater'),
     'type' => MENU_LOCAL_ACTION,
     'file' => 'wysiwyg_source_formater.admin.inc',
