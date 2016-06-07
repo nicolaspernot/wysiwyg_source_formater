@@ -96,42 +96,120 @@ function wysiwyg_source_formater_edit_rule($form, &$form_state, $wsf_id = NULL) 
 
   // Rule
   $wsf_rules = unserialize($wsf->rules);
-  $indent = array(
-    '#type' => 'checkbox',
-    '#title' => t('Indent'),
-  );
-  $breakBeforeOpen  = array(
-    '#type' => 'checkbox',
-    '#title' => t('Break before open'),
-  );
-  $breakAfterOpen  = array(
-    '#type' => 'checkbox',
-    '#title' => t('Break after open'),
-  );
-  $breakBeforeClose = array(
-    '#type' => 'checkbox',
-    '#title' => t('Break before close'),
-  );
-  $breakAfterClose = array(
-    '#type' => 'checkbox',
-    '#title' => t('Break after close'),
-  );
 
   $rules = array(
     '#type' => 'fieldset',
     '#title' => t('Rules'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
-    'indent' => $indent,
-    'breakBeforeOpen' => $breakBeforeOpen,
-    'breakAfterOpen' => $breakAfterOpen,
-    'breakBeforeClose' => $breakBeforeClose,
-    'breakAfterClose' => $breakAfterClose,
   );
+
+  foreach(wysiwyg_source_formater_get_rules_options() as $op => $option) {
+    $rules[$op] = array(
+      '#type' => 'checkbox',
+      '#title' => t($option),
+      '#default_value' => isset($wsf_rules[$op]) ? $wsf_rules[$op] : FALSE,
+    );
+  }
 
   // Tags
   $wsf_tags = unserialize($wsf->tags);
-  $list_tags = array(
+
+  $tags = array(
+    '#type' => 'fieldset',
+    '#title' => t('Tags'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+
+  foreach(wysiwyg_source_formater_get_tags() as $tag) {
+    $tags[$tag] = array(
+      '#type' => 'checkbox',
+      '#title' => $tag,
+      '#default_value' => isset($wsf_tags[$tag]) ? $wsf_tags[$tag] : FALSE,
+    );
+  }
+
+  $other = array(
+    '#title' => t('Other tags (one by line) :'),
+    '#type' => 'textarea',
+  );
+
+  $tags['other'] = $other;
+
+  //Submit button
+  $submit = array(
+    '#type' => 'submit',
+    '#value' => isset($wsf) ? t('Update rule') : t('Add new rule'),
+    '#submit' => isset($wsf) ? array('wysiwyg_source_formater_update_rule') : array('wysiwyg_source_formater_insert_rule'),
+  );
+
+  // The form
+  $form = array(
+    'title' => $title,
+    'rules' => $rules,
+    'tags' => $tags,
+    'submit' => $submit,
+  );
+
+  return $form;
+}
+
+// Form submit : Update the rule
+function wysiwyg_source_formater_update_rule($form, &$form_state) {
+  // TODO
+}
+
+// Form insert : Update the rule
+function wysiwyg_source_formater_insert_rule($form, &$form_state) {
+  $wsf = array(
+    'title' => '',
+    'rules' => '',
+    'tags' => '',
+  );
+
+  $data = array();
+
+  // Get all fieldset names
+  $groups = array();
+  foreach($form_state['groups'] as $key => $group) {
+    if($group['#group_exists']){
+      $groups[] = $key;
+    }
+  }
+
+  foreach($groups as $fieldset) {
+    if(isset($form_state['complete form'][$fieldset])) {
+      $elements = element_children($form_state['complete form'][$fieldset]);
+      foreach($elements as $element) {
+        if($form_state['values'][$element]) {
+          $data[$fieldset][$element] = TRUE;
+        }
+      }
+    }
+  }
+
+  $wsf['title'] = isset($form_state['values']['title']) ? $form_state['values']['title'] : NULL;
+  $wsf['rules'] = isset($data['rules']) ? serialize($data['rules']) : NULL;
+  $wsf['tags'] = isset($data['tags']) ? serialize($data['tags']) : NULL;
+
+  db_insert('wsf_rules')
+    ->fields($wsf)
+    ->execute();
+}
+
+function wysiwyg_source_formater_get_rules_options() {
+  return array(
+    'indent' => 'Indent',
+    'breakBeforeOpen' => 'Break before open',
+    'breakAfterOpen' => 'Break after open',
+    'breakBeforeClose' => 'Break before close',
+    'breakAfterClose' => 'Break after close',
+  );
+}
+
+function wysiwyg_source_formater_get_tags() {
+  return array(
     'a',
     'abbr',
     'address',
@@ -242,85 +320,4 @@ function wysiwyg_source_formater_edit_rule($form, &$form_state, $wsf_id = NULL) 
     'video',
     'wbr',
   );
-
-  $tags = array(
-    '#type' => 'fieldset',
-    '#title' => t('Tags'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-  );
-
-  foreach($list_tags as $tag) {
-    $tags[$tag] = array(
-      '#type' => 'checkbox',
-      '#title' => $tag,
-    );
-  }
-
-  $other = array(
-    '#title' => t('Other tags (one by line) :'),
-    '#type' => 'textarea',
-  );
-
-  $tags['other'] = $other;
-
-  //Submit button
-  $submit = array(
-    '#type' => 'submit',
-    '#value' => isset($wsf) ? t('Update rule') : t('Add new rule'),
-    '#submit' => isset($wsf) ? array('wysiwyg_source_formater_update_rule') : array('wysiwyg_source_formater_insert_rule'),
-  );
-
-  // The form
-  $form = array(
-    'title' => $title,
-    'rules' => $rules,
-    'tags' => $tags,
-    'submit' => $submit,
-  );
-
-  return $form;
-}
-
-// Form submit : Update the rule
-function wysiwyg_source_formater_update_rule($form, &$form_state) {
-  // TODO
-}
-
-// Form insert : Update the rule
-function wysiwyg_source_formater_insert_rule($form, &$form_state) {
-  $wsf = array(
-    'title' => '',
-    'rules' => '',
-    'tags' => '',
-  );
-
-  $data = array();
-
-  // Get all fieldset names
-  $groups = array();
-  foreach($form_state['groups'] as $key => $group) {
-    if($group['#group_exists']){
-      $groups[] = $key;
-    }
-  }
-
-  foreach($groups as $fieldset) {
-    if(isset($form_state['complete form'][$fieldset])) {
-      $elements = element_children($form_state['complete form'][$fieldset]);
-      foreach($elements as $element) {
-        if($form_state['values'][$element]) {
-          $data[$fieldset][$element] = TRUE;
-        }
-      }
-    }
-  }
-
-  $wsf['title'] = isset($form_state['values']['title']) ? $form_state['values']['title'] : NULL;
-  $wsf['rules'] = isset($data['rules']) ? serialize($data['rules']) : NULL;
-  $wsf['tags'] = isset($data['tags']) ? serialize($data['tags']) : NULL;
-
-  db_insert('wsf_rules')
-    ->fields($wsf)
-    ->execute();
 }
